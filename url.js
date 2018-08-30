@@ -1,4 +1,4 @@
-const { Config } = require('@supersoccer/misty')
+const { Config } = require('@supersoccer/misty-loader')
 const _ = require('lodash')
 const querystring = require('querystring')
 const parseUrl = require('url').parse
