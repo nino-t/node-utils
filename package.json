@@ -1,8 +1,8 @@
 {
   "name": "@supersoccer/utils",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "main": "index.js",
-  "repository": "https://github.com/supersoccer/node-utils",
+  "repository": "git://github.com/supersoccer/node-utils#v1.1.2",
   "author": "hkyo89 <hkyo89@yahoo.co.jp>",
   "license": "MIT",
   "scripts": {

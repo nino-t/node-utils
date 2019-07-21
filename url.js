@@ -4,8 +4,9 @@ const querystring = require('querystring')
 const parseUrl = require('url').parse
 
 class Url {
-  constructor (env) {
-    this.env = env || {}
+  constructor (locals) {
+    this.locals = locals
+    this.env = locals.Utils ? locals.Utils.Env : {}
   }
 
   /**
@@ -16,6 +17,10 @@ class Url {
    */
   // Previously #url()
   build (url, query) {
+    if (this.locals.appLock) {
+      url = this.appDomainUrl(url)
+    }
+
     if (_.isEmpty(query) || typeof query === 'string') {
       return url
     }
@@ -26,12 +31,31 @@ class Url {
     return `${url}?${queries}`
   }
 
+  appDomainUrl (url) {
+    if (this.locals.appLock && !_.isUndefined(this.locals.xURL)) {
+      const appHost = Url.cleanAppDomainUrl(Config.App.host)
+      const regex = new RegExp(`^(http[s]?:\/\/)(${appHost})(.*)`)
+      url = url.replace(regex, `$1${this.locals.xURL}$3`)
+    }
+
+    return url
+  }
+
   changeApp (appId) {
     return this.base(this.env.url, { app: appId })
   }
 
   original (url) {
     return url.replace(/\?.*/, '')
+  }
+
+  static cleanAppDomainUrl (url) {
+    if (!_.isUndefined(url) && typeof url === 'string') {
+      const appDomain = url.replace(/^http[s]?:\/\/|\/$/g, '')
+      if (appDomain !== '') {
+        return appDomain
+      }
+    }
   }
 
   app (path, qs) {
@@ -72,7 +96,7 @@ class Url {
   }
 
   asset (asset) {
-    return `${Config.Assets.url}/${asset.replace(/^\/+/, '')}?v=${Config.Assets.version}`
+    return `${this.locals.Utils.Url.build(Config.Assets.url)}/${asset.replace(/^\/+/, '')}?v=${Config.Assets.version}`
   }
 }
 
